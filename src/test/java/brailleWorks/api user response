@@ -1,0 +1,33 @@
+GET /weatherforecast
+• Description: Retrieves a list of all weather forecasts.
+• Parameters: None
+• Response: A JSON array of weather forecast objects. Each object includes an Id, Date, TemperatureC, TemperatureF, and Summary.
+
+GET /weatherforecast/{id}
+• Description: Retrieves a specific weather forecast by its unique identifier.
+• Parameters:
+• id (path parameter): The unique identifier of the weather forecast to retrieve.
+• Response: If found, returns a single weather forecast object in JSON format, including Id, Date, TemperatureC, TemperatureF, and Summary. If not found, returns a 404 Not Found status.
+
+POST /weatherforecast
+• Description: Creates a new weather forecast.
+• Parameters: A JSON object in the request body with the following properties:
+  - Date (DateOnly): The date of the forecast. Formatted "YYYY-MM-DD"
+  - TemperatureC (int): The temperature in Celsius.
+  - Summary (enum): A summary of the weather conditions.
+• Response: Returns a 201 Created status with the created weather forecast object in the response body, including a Location header pointing to the newly created forecast's URI.
+
+Valid Summaries
+When creating or interpreting weather forecasts, the Summary field can take one of the following enumerated values, which describe the general weather conditions:
+INDEX > Summaries
+[0] • Undefined
+[1] • Freezing
+[2] • Bracing
+[3] • Chilly
+[4] • Cool
+[5] • Mild
+[6] • Warm
+[7] • Balmy
+[8] • Hot
+[9] • Sweltering
+[10] • Scorching

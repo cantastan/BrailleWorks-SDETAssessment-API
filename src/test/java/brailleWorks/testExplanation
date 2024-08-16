@@ -1,0 +1,100 @@
+Verified that api, GET, GET{id}, POST, was communicating using (Postman API) prior to creating a RestAssured Framework
+
+Step-1 create maven selenium framework sdk11 create unique name per project
+    add package to organize framework (brailleWorks.api)
+    add documentation file for step by step (thought process)
+    add user response document
+Step-2 add dependencies tag (xml for API)
+            -https://mvnrepository.com/
+            -rest assured - ver 4.5.1
+            -Junit 5 - ver 5.9.0 (can use junit4 and testNG)
+            -jackson databind - ver 2.13.0
+
+Requirements 1 GET /weatherforecast
+Step-1 create a class (weatherForecast)
+            add a String variable to save http local host "http://localhost:8081/weatherforecast/"
+            add comment with test requirements (response)
+                /*
+                When user sends a request to http://localhost:8081/weatherforecast/ endpoint
+                Then user should be able to see status code is 200
+                And print out JSON response body into screen/console
+                */
+Step2 -add @DisplayName("") annotation
+      -add @Order(#) annotation
+      -add @Test annotation
+Step3 -add public void method (getWeatherForecast)
+            add from RestAssured library get method and attach Response interface
+            add print statement to verify status code retrieval
+            add int variable to store expected status code from (test requirements) 200
+            add int variable to store status code from api
+                add Assertions(junit5) .assertEquals with expected as 200
+Step4 Response -add response object to return json body onto console (great for viewing entire json array)
+
+Requirements 2 GET /weatherforecast/{id} positive parameters
+Step-1 create abstract class (weatherForecastTestBase)
+        -add @BeforeAll annotation
+        -add public void init() method init -- short for initialize
+            -add RestAssured.BaseURI = "http://localhost:8081/weatherforecast/";
+Step-2 in weatherForecast class extend the abstract class weatherForecastTestBase
+        -add @DisplayName("") annotation
+        -add @Order(#) annotation
+        -add @Test annotation
+Step-3 import - import static io.restassured.RestAssured.*;
+        add public void method (getWeatherForecastParametersPositive)
+            -add Response interface using RestAssured libraries
+                -add given()
+                    .accept(ContentType.JSON)
+                    .and()
+                    .pathParam("id",1)
+                    .when()
+                    .get("/{id}");
+Step-4 add int variables for expected and actual status codes
+        create if statement to give user some information to console in the event status code is 200 which will print json array or false
+        add Assertions(junit5) .assertEquals with expected as 200
+        add Assertions(junit5) .assertEquals ContentType "application/json; charset=utf-8"
+
+Requirements 2.1 GET /weatherforecast/{id} negative parameters
+Step-1 -add @DisplayName("") annotation
+       -add @Order(#) annotation
+       -add @Test annotation
+Step-2 add public void method (getWeatherForecastParametersNegative)
+            -add Response interface using RestAssured libraries
+                -add given()
+                    .accept(ContentType.JSON)
+                    .and()
+                    .pathParam("id",0)
+                    .when()
+                    .get("/{id}");
+Step-4 add int variables for expected and actual status codes
+        create if statement to give user some information to console in the event status code is 404 which will print message or false
+        add Assertions(junit5) .assertEquals with expected as 404
+
+Requirements 3 POST /weatherforecast
+Step-1 The POST request is where the jackson-databind dependency comes in handy but will work on ALL the requests
+       -add @DisplayName("") annotation
+       -add @Order(#) annotation
+       -add @Test annotation
+Step-2 -add public void method (postWeatherForecastParameters)
+            -add Map<String, Object> requestBody = new LinkedHashMap<>();
+                Store the json parameters into it with .put();
+                    {
+                    "date": "2024-08-16",
+                    "temperatureC": 40,
+                    "summary": "Scorching"
+                    }
+        -add JsonPath object with
+            given()
+            .accept(ContentType.JSON)
+            .and()
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+            .when()
+            .post().prettyPeek()
+            .then()
+            .statusCode(201)
+            .contentType("application/json; charset=utf-8")
+            .body("date", is("2024-08-16"),
+                  "temperatureC",is(40),
+                  "summary",is("Scorching"))
+            .extract().jsonPath();
+        -add Assertions.assertEquals() via jsonPathPost.get for date, temperatureC, summary
